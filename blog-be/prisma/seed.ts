@@ -270,14 +270,116 @@ Schema type-safe, ít SQL tay hơn.`,
       value: 'About',
     },
     {
-      key: 'nav.admin',
+      key: 'nav.blogs',
       locale: Locale.vn,
-      value: 'Admin',
+      value: 'Blogs',
     },
     {
-      key: 'nav.admin',
+      key: 'nav.blogs',
       locale: Locale.en,
-      value: 'Admin',
+      value: 'Blogs',
+    },
+    {
+      key: 'nav.til',
+      locale: Locale.vn,
+      value: 'TIL',
+    },
+    {
+      key: 'nav.til',
+      locale: Locale.en,
+      value: 'TIL',
+    },
+    {
+      key: 'nav.notes',
+      locale: Locale.vn,
+      value: 'Notes',
+    },
+    {
+      key: 'nav.notes',
+      locale: Locale.en,
+      value: 'Notes',
+    },
+    {
+      key: 'page.about.eyebrow',
+      locale: Locale.vn,
+      value: 'Giới thiệu',
+    },
+    {
+      key: 'page.about.eyebrow',
+      locale: Locale.en,
+      value: 'About',
+    },
+    {
+      key: 'page.about.body',
+      locale: Locale.vn,
+      value:
+        'Tôi viết về những gì đang làm và đang học — từ React, NestJS, database đến vận hành hệ thống. Blog là nơi tổng hợp bài dài; TIL là mẩu học được trong ngày; Notes là ghi chú nhanh chưa thành bài.',
+    },
+    {
+      key: 'page.about.body',
+      locale: Locale.en,
+      value:
+        'I write about what I build and learn — from React and NestJS to databases and running systems in production. Blogs are long-form posts; TIL is what I picked up today; Notes are quick drafts not yet polished.',
+    },
+    {
+      key: 'page.blogs.title',
+      locale: Locale.vn,
+      value: 'Bài viết',
+    },
+    {
+      key: 'page.blogs.title',
+      locale: Locale.en,
+      value: 'Blog posts',
+    },
+    {
+      key: 'page.blogs.subtitle',
+      locale: Locale.vn,
+      value: 'Bài dài về backend, frontend và kinh nghiệm thực tế.',
+    },
+    {
+      key: 'page.blogs.subtitle',
+      locale: Locale.en,
+      value: 'Long-form writing on backend, frontend, and real-world experience.',
+    },
+    {
+      key: 'page.til.title',
+      locale: Locale.vn,
+      value: 'Today I Learned',
+    },
+    {
+      key: 'page.til.title',
+      locale: Locale.en,
+      value: 'Today I Learned',
+    },
+    {
+      key: 'page.til.empty',
+      locale: Locale.vn,
+      value: 'Chưa có mục TIL. Sắp có — những điều nhỏ học được mỗi ngày.',
+    },
+    {
+      key: 'page.til.empty',
+      locale: Locale.en,
+      value: 'No TIL entries yet. Coming soon — small things learned each day.',
+    },
+    {
+      key: 'page.notes.title',
+      locale: Locale.vn,
+      value: 'Notes',
+    },
+    {
+      key: 'page.notes.title',
+      locale: Locale.en,
+      value: 'Notes',
+    },
+    {
+      key: 'page.notes.empty',
+      locale: Locale.vn,
+      value: 'Chưa có ghi chú. Đây sẽ là nơi draft và ý tưởng chưa publish.',
+    },
+    {
+      key: 'page.notes.empty',
+      locale: Locale.en,
+      value: 'No notes yet. This will hold drafts and ideas not ready to publish.',
     },
     {
       key: 'section.recent',

@@ -1,18 +1,23 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useSearchParams } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { LocaleSwitcher } from "@/components/LocaleSwitcher";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { t } from "@/lib/api/i18n";
 import { getPublicApiUrl } from "@/lib/env";
-import { parseLocale, withLocale } from "@/lib/locale";
+import { localeFromPathname, localePath } from "@/lib/locale";
+
+type NavItem = {
+  id: string;
+  href: string;
+  labelKey: string;
+  fallback: string;
+};
 
 function SiteHeaderInner() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
-  const locale = parseLocale(searchParams.get("ln"));
+  const locale = localeFromPathname(pathname);
   const [strings, setStrings] = useState<Record<string, string>>({});
 
   useEffect(() => {
@@ -25,48 +30,53 @@ function SiteHeaderInner() {
       .catch(() => setStrings({}));
   }, [locale]);
 
-  const homeHref = withLocale("/", locale);
-  const adminHref = withLocale("/admin", locale);
+  const aboutHref = localePath("/about", locale);
+  const blogsHref = localePath("/blogs", locale);
 
-  const links = [
-    { href: homeHref, label: t(strings, "nav.home", "Trang chủ"), exact: true },
+  const links: NavItem[] = [
+    { id: "about", href: aboutHref, labelKey: "nav.about", fallback: "About" },
+    { id: "blogs", href: blogsHref, labelKey: "nav.blogs", fallback: "Blogs" },
+    { id: "til", href: localePath("/til", locale), labelKey: "nav.til", fallback: "TIL" },
     {
-      href: `${homeHref}#about`,
-      label: t(strings, "nav.about", "Về tôi"),
-      exact: false,
+      id: "notes",
+      href: localePath("/notes", locale),
+      labelKey: "nav.notes",
+      fallback: "Notes",
     },
-    { href: adminHref, label: t(strings, "nav.admin", "Admin"), exact: false },
   ];
+
+  function isActive(item: NavItem): boolean {
+    if (item.id === "about") return pathname === aboutHref;
+    if (item.id === "blogs") {
+      return (
+        pathname === blogsHref || pathname.startsWith(`${blogsHref}/`) ||
+        pathname.includes("/p/")
+      );
+    }
+    return pathname === item.href || pathname.startsWith(`${item.href}/`);
+  }
 
   return (
     <header className="site-header">
       <div className="site-header-inner">
-        <Link href={homeHref} className="site-logo">
+        <Link href={aboutHref} className="site-logo">
           <span className="site-logo-dot" />
           <span>{t(strings, "site.name", "Gonzalo")}</span>
         </Link>
 
         <nav className="site-nav" aria-label="Main">
-          {links.map((link) => {
-            const active = link.exact
-              ? pathname === "/"
-              : link.href.includes("/admin")
-                ? pathname.startsWith("/admin")
-                : false;
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={`site-nav-link${active ? " site-nav-link--active" : ""}`}
-              >
-                {link.label}
-              </Link>
-            );
-          })}
+          {links.map((link) => (
+            <Link
+              key={link.id}
+              href={link.href}
+              className={`site-nav-link${isActive(link) ? " site-nav-link--active" : ""}`}
+            >
+              {t(strings, link.labelKey, link.fallback)}
+            </Link>
+          ))}
         </nav>
 
         <div className="site-header-actions">
-          <LocaleSwitcher locale={locale} />
           <ThemeToggle />
         </div>
       </div>

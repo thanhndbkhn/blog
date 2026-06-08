@@ -19,7 +19,7 @@ export type PostWithRelations = Prisma.PostGetPayload<{
   include: typeof postInclude;
 }>;
 
-function mapPost(p: PostWithRelations, locale: Locale = Locale.vn) {
+function mapPost(p: PostWithRelations, locale: Locale = Locale.en) {
   const en = p.translations.find((t) => t.locale === Locale.en);
   const useEn = locale === Locale.en && en;
   return {
@@ -41,7 +41,7 @@ function mapPost(p: PostWithRelations, locale: Locale = Locale.vn) {
 export class PostsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async listPublished(locale: Locale = Locale.vn) {
+  async listPublished(locale: Locale = Locale.en) {
     const list = await this.prisma.post.findMany({
       where: { status: PostStatus.PUBLISHED },
       orderBy: { publishedAt: 'desc' },
@@ -50,7 +50,7 @@ export class PostsService {
     return list.map((p) => mapPost(p, locale));
   }
 
-  async getPublishedBySlug(slug: string, locale: Locale = Locale.vn) {
+  async getPublishedBySlug(slug: string, locale: Locale = Locale.en) {
     const post = await this.prisma.post.findFirst({
       where: { slug, status: PostStatus.PUBLISHED },
       include: postInclude,

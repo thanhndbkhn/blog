@@ -213,7 +213,23 @@
 .site-nav {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.15rem;
+  overflow-x: auto;
+  max-width: min(100%, 20rem);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.site-nav::-webkit-scrollbar {
+  display: none;
+}
+
+@media (min-width: 640px) {
+  .site-nav {
+    gap: 0.25rem;
+    max-width: none;
+    overflow: visible;
+  }
 }
 
 .site-nav-link {
@@ -328,6 +344,12 @@
   margin-top: 0.65rem;
   font-size: 0.95rem;
   line-height: 1.7;
+  color: var(--muted);
+}
+
+.about-detail-text {
+  font-size: 0.95rem;
+  line-height: 1.75;
   color: var(--muted);
 }
 

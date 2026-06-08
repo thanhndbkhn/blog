@@ -6,7 +6,7 @@ import {
   getReadingTimeMinutes,
 } from "@/lib/post-utils";
 import type { Locale } from "@/lib/locale";
-import { withLocale } from "@/lib/locale";
+import { localePath } from "@/lib/locale";
 
 export type PostCardData = {
   id: string;
@@ -27,7 +27,7 @@ type Props = {
 export function PostCard({
   post,
   featured = false,
-  locale = "vn",
+  locale = "en",
   readingLabel = "phút đọc",
 }: Props) {
   const excerpt = getExcerpt(post.body, featured ? 200 : 140);
@@ -39,7 +39,7 @@ export function PostCard({
       className={`post-card${featured ? " post-card--featured" : ""}`}
     >
       <Link
-        href={withLocale(`/p/${post.slug}`, locale)}
+        href={localePath(`/p/${post.slug}`, locale)}
         className="post-card-link"
       >
         <div

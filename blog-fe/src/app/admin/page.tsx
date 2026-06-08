@@ -182,7 +182,7 @@ export default function AdminPage() {
                       <div className="flex items-center gap-3">
                         <span className="tag-pill">{p.status}</span>
                         <Link
-                          href={`/p/${p.slug}`}
+                          href={`/en/p/${p.slug}`}
                           className="text-xs text-muted hover:text-accent"
                         >
                           Xem

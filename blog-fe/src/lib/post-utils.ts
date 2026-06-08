@@ -25,7 +25,7 @@ export function getReadingTimeMinutes(body: string): number {
 
 export function formatPostDate(
   iso: string | null,
-  locale: Locale = "vn",
+  locale: Locale = "en",
 ): string {
   if (!iso) return "";
   return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "vi-VN", {
