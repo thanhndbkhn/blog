@@ -1,0 +1,51 @@
+---
+description: Git commit message conventions
+alwaysApply: true
+---
+
+# Git Commits
+
+Use **Conventional Commits** in English:
+
+```
+<type>(<scope>): <subject>
+
+[optional body]
+```
+
+## Types
+
+| Type | Use for |
+|------|---------|
+| `feat` | New feature |
+| `fix` | Bug fix |
+| `refactor` | Code change without behavior change |
+| `chore` | Tooling, deps, config |
+| `docs` | Documentation only |
+| `test` | Tests only |
+| `style` | Formatting, no logic change |
+
+## Scopes
+
+- `fe` — `blog-fe/`
+- `be` — `blog-be/`
+- `api` — cross-cutting API changes
+- `db` — database/migrations
+
+## Examples
+
+```
+feat(be): add posts CRUD endpoints with Swagger docs
+
+feat(fe): fetch posts from NestJS API on homepage
+
+fix(be): return 404 instead of 500 for missing post
+
+chore(fe): add NEXT_PUBLIC_API_URL to env example
+```
+
+## Rules
+
+- Subject: imperative mood, lowercase, no period, max 72 chars.
+- One logical change per commit.
+- Never commit `.env`, credentials, or secrets.

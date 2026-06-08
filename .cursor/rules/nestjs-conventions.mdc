@@ -1,0 +1,79 @@
+---
+description: NestJS backend conventions for blog-be
+globs: blog-be/**/*.ts
+alwaysApply: false
+---
+
+# NestJS Conventions
+
+## Module Structure
+
+One feature per module under `src/<feature>/`:
+
+```
+posts/
+├── posts.module.ts
+├── posts.controller.ts
+├── posts.service.ts
+├── dto/
+│   ├── create-post.dto.ts
+│   └── update-post.dto.ts
+└── entities/
+    └── post.entity.ts
+```
+
+## Patterns
+
+- Use `@nestjs/swagger` decorators on every controller endpoint and DTO field.
+- Validate input with `class-validator` + `ValidationPipe` (global).
+- Return consistent response shape:
+
+```typescript
+// ✅ GOOD
+return { data: post, message: 'Post created' };
+
+// ❌ BAD — raw entity without wrapper
+return post;
+```
+
+- Use **TypeORM** repositories via `@InjectRepository()`; avoid raw SQL unless necessary.
+- Run schema changes via TypeORM migrations (`npm run migration:generate`, `migration:run`).
+- Map entities to response DTOs — never expose internal fields (passwords, tokens).
+
+## Authentication (JWT + Passport)
+
+- Auth module: `src/auth/` with `JwtStrategy`, `JwtAuthGuard`, `AuthService`.
+- Issue JWT on login/register; store `JWT_SECRET` and `JWT_EXPIRES_IN` in env.
+- Protected routes: `@UseGuards(JwtAuthGuard)` + `@ApiBearerAuth()`.
+- Public routes must be explicitly marked (no guard).
+- Access current user via `@Request() req` → `req.user` (set by JwtStrategy).
+
+```typescript
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
+@Get('drafts')
+findMyDrafts(@Request() req) {
+  return this.draftsService.findByAuthor(req.user.id);
+}
+```
+
+## Naming
+
+- Files: kebab-case (`create-post.dto.ts`)
+- Classes: PascalCase (`CreatePostDto`, `PostsService`)
+- Endpoints: plural nouns (`/posts`, `/posts/:id`)
+- HTTP verbs: GET (read), POST (create), PATCH (partial update), DELETE (remove)
+
+## Error Handling
+
+```typescript
+// ✅ GOOD
+throw new NotFoundException(`Post with id ${id} not found`);
+
+// ❌ BAD
+throw new Error('not found');
+```
+
+## Register New Modules
+
+Always import feature modules in `app.module.ts`.

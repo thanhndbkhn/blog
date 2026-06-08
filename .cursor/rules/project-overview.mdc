@@ -1,0 +1,49 @@
+---
+description: BlogProject monorepo overview and global conventions
+alwaysApply: true
+---
+
+# BlogProject Overview
+
+Monorepo with two apps:
+
+| App | Path | Stack |
+|-----|------|-------|
+| Frontend | `blog-fe/` | Next.js 14, TanStack Query, Tailwind, Shadcn UI, TipTap |
+| Backend | `blog-be/` | NestJS 11, TypeORM, JWT + Passport, Swagger, PostgreSQL |
+
+## Tech Stack (Locked)
+
+| Layer | Choice |
+|-------|--------|
+| ORM | **TypeORM** |
+| Auth | **JWT + Passport** (`@nestjs/jwt`, `@nestjs/passport`) |
+| FE data fetching | **TanStack Query** (`@tanstack/react-query`) |
+| Deploy FE | **Vercel** |
+| Deploy BE + DB | **Railway** (NestJS service + PostgreSQL addon) |
+
+## Architecture Direction
+
+- **NestJS REST API** is the primary backend (`blog-be/`).
+- Frontend is migrating from direct Supabase calls to NestJS API endpoints.
+- Keep Supabase only during migration; do not add new Supabase-dependent features unless explicitly requested.
+- Database schema reference: `blog-fe/database_schema/supabase_db_schema.sql`.
+
+## Communication
+
+- Code, comments, commit messages, and API docs: **English**.
+- Explanations to the user: **Vietnamese**.
+
+## General Principles
+
+- Minimize scope — smallest correct diff, no unrelated changes.
+- Match existing patterns before introducing new abstractions.
+- Tests only when the user explicitly requests them.
+- Do not commit unless the user asks.
+- Do not create markdown/docs files unless requested.
+
+## Ports
+
+- Frontend: `http://localhost:3000`
+- Backend: `http://localhost:3000` (BE) — use `PORT=3001` in `.env` to avoid conflict during dev
+- Swagger: `http://localhost:3001/api-docs`

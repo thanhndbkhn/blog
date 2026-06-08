@@ -1,0 +1,111 @@
+---
+description: Next.js frontend conventions for blog-fe
+globs: blog-fe/**/*.{ts,tsx}
+alwaysApply: false
+---
+
+# Next.js Conventions
+
+## App Router Structure
+
+```
+app/
+├── (main)/          # Public pages
+├── (detail)/        # Post detail
+├── (protected)/     # Auth-required pages
+├── api/             # Route handlers (prefer NestJS API for new features)
+└── auth/            # Auth callbacks
+```
+
+## Server vs Client Components
+
+- **Default to Server Components** for layout, static content, and SEO metadata.
+- Add `"use client"` when using TanStack Query hooks, event handlers, or browser APIs.
+- Data fetching uses **TanStack Query** — not raw `fetch()` in components, not Supabase (for new code).
+
+## TanStack Query Structure
+
+```
+lib/
+├── api/
+│   ├── client.ts       # Base fetch wrapper + ApiError
+│   ├── posts.ts        # Query functions (getPosts, createPost...)
+│   └── query-keys.ts   # Centralized query key factory
+├── query/
+│   ├── provider.tsx    # QueryClientProvider wrapper
+│   └── get-query-client.ts
+hooks/
+└── use-posts.ts        # useQuery / useMutation hooks
+```
+
+## Data Fetching (New Code)
+
+```typescript
+// ✅ GOOD — Client Component with TanStack Query
+'use client';
+import { usePosts } from '@/hooks/use-posts';
+
+export function PostList() {
+  const { data, isLoading, error } = usePosts({ page: 1 });
+  if (isLoading) return <Skeleton />;
+  if (error) return <SharedError />;
+  return data?.map((post) => <MainPostItem key={post.id} post={post} />);
+}
+
+// ✅ GOOD — Server Component with prefetch + hydration
+import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { getQueryClient } from '@/lib/query/get-query-client';
+import { prefetchPosts } from '@/lib/api/posts';
+
+export default async function HomePage() {
+  const queryClient = getQueryClient();
+  await prefetchPosts(queryClient, { page: 1 });
+  return (
+    <HydrationBoundary state={dehydrate(queryClient)}>
+      <PostList />
+    </HydrationBoundary>
+  );
+}
+
+// ❌ BAD — raw fetch in component (legacy)
+const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/posts`);
+
+// ❌ BAD — new Supabase direct calls
+const supabase = createClient(cookieStore);
+await supabase.from("posts").select("*");
+```
+
+## Query Key Convention
+
+```typescript
+// lib/api/query-keys.ts
+export const postKeys = {
+  all: ['posts'] as const,
+  lists: () => [...postKeys.all, 'list'] as const,
+  list: (filters: { page: number }) => [...postKeys.lists(), filters] as const,
+  detail: (slug: string) => [...postKeys.all, 'detail', slug] as const,
+};
+```
+
+## Mutations
+
+- Use `useMutation` for create/update/delete.
+- Invalidate related queries on success: `queryClient.invalidateQueries({ queryKey: postKeys.lists() })`.
+- Show toast on success/error via `react-hot-toast`.
+
+## File & Naming Conventions
+
+| Type | Pattern | Example |
+|------|---------|---------|
+| Page | `app/.../page.tsx` | `(main)/page.tsx` |
+| Component | kebab-case file, PascalCase export | `main-post-item.tsx` → `MainPostItem` |
+| Hook | `hooks/use-<feature>.ts` | `hooks/use-posts.ts` |
+| Config | `config/<area>/<name>-config.ts` | `config/main/main-post-config.ts` |
+| Validation | `lib/validation/<feature>.ts` | Zod schemas |
+| Types | `types/collection.ts` | Domain types |
+
+## Forms
+
+- React Hook Form + Zod resolver.
+- Validation schemas in `lib/validation/`.
+- Submit via `useMutation`, not direct fetch in `onSubmit`.

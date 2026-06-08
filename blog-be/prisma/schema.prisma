@@ -1,0 +1,96 @@
+// https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum Locale {
+  vn
+  en
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         UserRole @default(ADMIN)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  posts        Post[]
+
+  @@map("users")
+}
+
+model Post {
+  id          String     @id @default(cuid())
+  title       String
+  slug        String     @unique
+  body        String     @db.Text
+  status      PostStatus @default(DRAFT)
+  publishedAt DateTime?  @map("published_at")
+  authorId    String     @map("author_id")
+  author      User       @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+  tags         PostTag[]
+  translations PostTranslation[]
+
+  @@index([authorId])
+  @@index([status])
+  @@map("posts")
+}
+
+model PostTranslation {
+  postId String @map("post_id")
+  locale Locale
+  title  String
+  body   String @db.Text
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@id([postId, locale])
+  @@map("post_translations")
+}
+
+model I18nEntry {
+  key    String
+  locale Locale
+  value  String @db.Text
+
+  @@id([key, locale])
+  @@map("i18n_entries")
+}
+
+model Tag {
+  id        String    @id @default(cuid())
+  name      String    @unique
+  slug      String    @unique
+  createdAt DateTime  @default(now()) @map("created_at")
+  posts     PostTag[]
+
+  @@map("tags")
+}
+
+/// Bảng nối Post <-> Tag (N-N)
+model PostTag {
+  postId String @map("post_id")
+  tagId  String @map("tag_id")
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  tag    Tag    @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([postId, tagId])
+  @@map("post_tags")
+}

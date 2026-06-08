@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Environment & secrets
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# Build outputs
+dist/
+.next/
+out/
+build/
+coverage/
+
+# Logs & OS
+*.log
+.DS_Store
+Thumbs.db
+
+# IDE (keep .cursor rules & skills — tracked intentionally)
+.idea/
+*.swp
+*.swo
+
+# Prisma
+blog-be/node_modules/
+
+# Misc
+*.tsbuildinfo
+.vercel
