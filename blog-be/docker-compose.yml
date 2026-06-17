@@ -1,15 +1,15 @@
 # Chạy: docker compose up -d
 # MinIO API: http://localhost:9000  | Console: http://localhost:9001 (minioadmin / minioadmin)
 services:
+  # host network: docker-proxy publish 5432 hay treo trên một số máy (pg_isready "no response")
   postgres:
     image: postgres:16-alpine
     container_name: blog-postgres
+    network_mode: host
     environment:
       POSTGRES_USER: blog
       POSTGRES_PASSWORD: blog
       POSTGRES_DB: blog
-    ports:
-      - '5432:5432'
     volumes:
       - blog_pg_data:/var/lib/postgresql/data
     healthcheck:
@@ -57,6 +57,40 @@ services:
         mc anonymous set download local/blog-uploads
         mc cors set local/blog-uploads /cors.json
         echo 'MinIO bucket blog-uploads ready.'
+
+  # ── Gateway: gộp FE (:3000) + BE (:4000) → :8080 (cho Cloudflare Tunnel) ──
+  gateway:
+    image: nginx:alpine
+    container_name: blog-gateway
+    network_mode: host
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+    restart: unless-stopped
+
+  # Quick tunnel — KHÔNG cần domain / tài khoản Cloudflare
+  # URL dạng https://xxx.trycloudflare.com (xem: docker logs -f blog-cloudflared-quick)
+  cloudflared-quick:
+    image: cloudflare/cloudflared:latest
+    container_name: blog-cloudflared-quick
+    network_mode: host
+    profiles: ['tunnel-quick']
+    command: tunnel --no-autoupdate --protocol http2 --url http://127.0.0.1:8080
+    depends_on:
+      - gateway
+    restart: unless-stopped
+
+  # Named tunnel — khi đã có domain trên Cloudflare (xem cloudflared/config.yml.example)
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: blog-cloudflared
+    network_mode: host
+    profiles: ['tunnel']
+    command: tunnel --no-autoupdate --config /etc/cloudflared/config.yml run
+    volumes:
+      - ./cloudflared:/etc/cloudflared:ro
+    depends_on:
+      - gateway
+    restart: unless-stopped
 
 volumes:
   blog_pg_data:

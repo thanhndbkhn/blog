@@ -23,7 +23,10 @@
     "prisma:migrate:deploy": "prisma migrate deploy",
     "prisma:studio": "prisma studio",
     "postinstall": "prisma generate",
-    "seed": "prisma db seed"
+    "seed": "prisma db seed",
+    "docker:up": "docker compose up -d",
+    "docker:tunnel": "bash scripts/tunnel-quick.sh",
+    "docker:tunnel:domain": "docker compose --profile tunnel up -d gateway cloudflared"
   },
   "prisma": {
     "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"

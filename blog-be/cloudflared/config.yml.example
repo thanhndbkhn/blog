@@ -1,0 +1,30 @@
+# Dùng khi đã có domain trên Cloudflare.
+#
+# Setup (một lần, trên máy host):
+#   cloudflared tunnel login
+#   cloudflared tunnel create blog-local
+#   cp cloudflared/config.yml.example cloudflared/config.yml
+#   # Sửa tunnel ID + credentials-file, rồi:
+#   cloudflared tunnel route dns blog-local yourdomain.com
+#   cloudflared tunnel route dns blog-local www.yourdomain.com
+#
+# Chạy: npm run docker:tunnel:domain
+
+tunnel: <TUNNEL_ID>
+credentials-file: /etc/cloudflared/<TUNNEL_ID>.json
+
+# Một số mạng/ISP chặn UDP 7844 (QUIC) — dùng http2
+protocol: http2
+
+ingress:
+  # Một URL — gateway nginx gộp FE (:3000) + API (:4000)
+  - hostname: yourdomain.com
+    service: http://127.0.0.1:8080
+  - hostname: www.yourdomain.com
+    service: http://127.0.0.1:8080
+
+  # (Tuỳ chọn) MinIO public — chỉ khi cần upload ảnh qua internet
+  # - hostname: files.yourdomain.com
+  #   service: http://127.0.0.1:9000
+
+  - service: http_status:404
