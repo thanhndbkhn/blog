@@ -6,3 +6,6 @@ coverage
 prisma/*.db
 prisma/*.db-journal
 *.log
+bin/
+cloudflared/*.json
+cloudflared/config.yml

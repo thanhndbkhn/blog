@@ -18,9 +18,7 @@ protocol: http2
 
 ingress:
   # Một URL — gateway nginx gộp FE (:3000) + API (:4000)
-  - hostname: yourdomain.com
-    service: http://127.0.0.1:8080
-  - hostname: www.yourdomain.com
+  - hostname: thanhgonzalo.dpdns.org
     service: http://127.0.0.1:8080
 
   # (Tuỳ chọn) MinIO public — chỉ khi cần upload ảnh qua internet
